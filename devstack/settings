@@ -1,6 +1,5 @@
 TACKER_MODE=${TACKER_MODE:-all}
 USE_BARBICAN=True
-
 KUBERNETES_VIM=${KUBERNETES_VIM:-True}
 
 if [ "${TACKER_MODE}" == "all" ]; then
@@ -13,12 +12,13 @@ if [ "${TACKER_MODE}" == "all" ]; then
 
     # TACKER_NEUTRON_AGENTS can be disabled by adding
     # TACKER_NEUTRON_AGENTS='' in local.conf if neutron agents are running on a separate node
-    TACKER_NEUTRON_AGENTS=${TACKER_NEUTRON_AGENTS:-q-agt,q-dhcp,q-meta,q-l3,q-svc}
+    TACKER_NEUTRON_AGENTS=${TACKER_NEUTRON_AGENTS:-q-agt,q-dhcp,q-meta,q-l3}
     for i in $(echo $TACKER_NEUTRON_AGENTS | sed 's/,/ /g')
     do
         enable_service $i
     done
 
+    enable_service q-svc
     enable_service neutron
 
     enable_service tacker
@@ -71,7 +71,7 @@ if [ "${TACKER_MODE}" == "all" ]; then
     fi
 elif [ "${TACKER_MODE}" == "standalone" ]; then
     # set the enabled services here. This will need tacker devstack plugin put as the last one in local.conf
-    ENABLED_SERVICES=key,horizon,tacker,tacker-conductor,mysql,dstat,barbican,mistral,mistral-api,mistral-engine,mistral-executor,mistral-event-engine,rabbit
+    ENABLED_SERVICES=key,horizon,tacker,tacker-conductor,mysql,dstat,barbican,mistral,mistral-api,mistral-engine,mistral-executor,mistral-event-engine
 else
     die $LINENO "invalid value: $TACKER_MODE for TACKER_MODE"
 fi
